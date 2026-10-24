@@ -1,0 +1,25 @@
+name: Build web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: unzip -q quran_app.zip
+      - run: |
+          cd quran_app
+          flutter create . --platforms=web --project-name quran_app
+          flutter pub get
+          flutter build web --release --base-href /Quran-app/
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./quran_app/build/web
